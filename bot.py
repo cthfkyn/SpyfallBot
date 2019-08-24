@@ -43,7 +43,7 @@ async def joinGame(ctx):
 @bot.command()
 async def leaveGame(ctx):
     players.pop(ctx.message.author)
-    await cxt.send(ctx.message.author.name + " has left the game.")
+    await ctx.send(ctx.message.author.name + " has left the game.")
 
 @bot.command()
 async def startGame(ctx):
@@ -55,6 +55,7 @@ async def startGame(ctx):
 
 @bot.command()
 async def y(ctx):
+    print('in confirmation')
     if wait_game_start_confirmation:
         print("starting game??????")
         await start_game(ctx)
@@ -84,4 +85,4 @@ async def assign_spy(ctx):
     spy = list(players.keys())[index]
     await players[spy].send("shhhh, you're the spy...")
 
-bot.run('NjE0NjA0NTUyMDI0NDkwMDE1.XWC-Ug.mem-O038YuvcI1Q_jrt5sa7fuVY')
+bot.run('NjE0NjA0NTUyMDI0NDkwMDE1.XWDIIQ.IURd4MWR0-DdtOlRzDDtR0EBFm8')
