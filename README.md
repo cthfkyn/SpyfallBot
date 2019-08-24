@@ -5,5 +5,6 @@ a simple discord bot that runs a game of spyfall.
 
 Install [discord.py](https://github.com/Rapptz/discord.py).
 Clone this directory somewhere, then just run
-.. code:: sh
+```
 python bot.py
+```
