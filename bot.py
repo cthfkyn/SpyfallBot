@@ -2,10 +2,10 @@ import discord
 from discord.ext import commands
 import random
 
-bot = commands.Bot(command_prefix='>')
+bot = commands.Bot(command_prefix='!')
 
 players = dict()
-wait_game_start_confirmation = False
+wait_game_start_confirmation = 0
 
 # events
 @bot.event
@@ -16,16 +16,6 @@ async def on_ready():
 @bot.event
 async def on_disconnect():
     players.clear()
-
-# @bot.event
-# async def on_message(message):
-#     if message.author == bot.user:
-#         return
-
-#     if message.content.startswith('ping'):
-#         await message.channel.send('ping urself')
-
-#     await bot.process_commands(message)
 
 # commands
 @bot.command()
@@ -49,7 +39,8 @@ async def leaveGame(ctx):
 async def startGame(ctx):
     if len(players.keys()) < 4:
         await ctx.send("there are less than 4 players. are you sure you want to start? send 'y' to continue.")
-        wait_game_start_confirmation = True
+        print('setting waiting for confirmation flag')
+        wait_game_start_confirmation = 1
         return
     await start_game(ctx)
 
@@ -65,10 +56,15 @@ async def reset(ctx):
     await ctx.send("resetting game state.")
     players.clear()
 
+@bot.command()
+async def debug(ctx):
+    print(wait_game_start_confirmation)
+    print(players)
+
 # game logic
 async def start_game(ctx):
     await ctx.send("starting game.")
-    await assign_spy(ctx)
+    # await assign_spy(ctx)
 
 async def initiate_player(ctx, new_player):
     dm = new_player.dm_channel
@@ -85,4 +81,4 @@ async def assign_spy(ctx):
     spy = list(players.keys())[index]
     await players[spy].send("shhhh, you're the spy...")
 
-bot.run('NjE0NjA0NTUyMDI0NDkwMDE1.XWDIIQ.IURd4MWR0-DdtOlRzDDtR0EBFm8')
+bot.run('NjE0NjA0NTUyMDI0NDkwMDE1.XWDl_Q.V02BlrSqdL3nlE9v-Bd2uh_bJEE')
