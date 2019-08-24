@@ -1,15 +1,17 @@
 import discord
 from discord.ext import commands
 import random
+import asyncio
 
 class Spyfall(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.players = dict()
         self.wait_game_start_confirmation = 0
-        self.locations = [
-            
-        ]
+        self.spy = None
+        self.roles = dict()
+        
+        self.load_roles()
 
     # events
     @commands.Cog.listener()
@@ -41,7 +43,13 @@ class Spyfall(commands.Cog):
         
     @commands.command()
     async def startGame(self, ctx):
-        if len(self.players.keys()) < 4:
+        if len(self.players) == 1:
+            await ctx.send("I can't start a game with only 1 player you fool")
+            return
+        if len(self.players) == 0:
+            await ctx.send("There's no one in the game.")
+            return
+        if len(self.players) < 4:
             await ctx.send("there are less than 4 players. are you sure you want to start? send 'y' to continue.")
             print('setting waiting for confirmation flag')
             self.wait_game_start_confirmation = 1
@@ -63,13 +71,15 @@ class Spyfall(commands.Cog):
         
     @commands.command()
     async def debug(self, ctx):
-        print(self.wait_game_start_confirmation)
-        print(self.players)
+        print('len(players): ' + str(len(self.players)))
+        print('number of locations: ' + str(len(self.roles)))
+        self.start_timer(ctx)
         
     # game logic
     async def start_game(self, ctx):
         await ctx.send("starting game.")
         await self.assign_spy(ctx)
+        await self.assign_roles(ctx)
     
     async def initiate_player(self, ctx, new_player):
         dm = new_player.dm_channel
@@ -82,16 +92,49 @@ class Spyfall(commands.Cog):
         await ctx.send(new_player.name + ' has joined the game.')
         
     async def assign_spy(self, ctx):
-        if len(self.players.keys()) <= 1:
+        index = random.randrange(len(self.players)-1)
+        self.spy = list(self.players.keys())[index]
+        await self.players[self.spy].send("shhhh, you're the spy...")
+        
+    async def assign_roles(self, ctx):
+        #for player in self.players:
+        print('assing_roles')
+        
+    # util methods
+    def load_roles(self):
+        print("loading roles from file.")
+        with open('roles') as f:
+            locations = f.readlines()
             index = 0
-        else:
-            index = random.randrange(len(self.players.keys())-1)
-        spy = list(self.players.keys())[index]
-        await self.players[spy].send("shhhh, you're the spy...")
+            while index < len(locations):
+                location = locations[index].strip() #location name
+                index+=1
+                while index < len(locations) and locations[index].strip() != '-':
+                    if location not in self.roles:
+                        self.roles[location] = [locations[index].strip()]
+                    else:
+                        self.roles[location].append(locations[index].strip())
+                    index+=1
+                index+=1
+    
+    def start_timer(self, ctx, duration = 10): # duration in minutes
+        print('in start_timer')
+        self.bot.loop.create_task(self.start_timer_helper(ctx, duration))
+    
+    async def start_timer_helper(self, ctx, duration):
+        print('in helper')
+        time_left = duration
+        while not self.bot.is_closed:
+            # reminder every minute
+            await ctx.send(str(time_left) + " minutes left!")
+            await asyncio.sleep(10)
+            time_left -= 1
+            if time_left >= 0:
+                return
 
 if __name__=="__main__":
     bot = commands.Bot(command_prefix='!')
-    f = open('token')
-    token = f.read()
+    with open("token") as f:
+        token = f.read()
     bot.add_cog(Spyfall(bot))
     bot.run(token)
