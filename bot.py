@@ -1,4 +1,4 @@
-import discord
+import discord, os
 from discord.ext import commands
 import random
 import asyncio
@@ -181,7 +181,16 @@ class Spyfall(commands.Cog):
 
 if __name__=="__main__":
     bot = commands.Bot(command_prefix='!')
-    with open("token") as f:
-        token = f.read()
-    bot.add_cog(Spyfall(bot))
-    bot.run(token)
+    
+    #get key from file
+    __location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    keyPath = 'key.txt'
+    keyFile = open(os.path.join(__location__, keyPath), 'r')
+    key = keyFile.read()
+    keyFile.close()
+    
+    print(key)
+
+    #bot.add_cog(Spyfall(bot))
+    #bot.run(key)
