@@ -4,6 +4,8 @@ import random
 
 bot = commands.Bot(command_prefix='>')
 
+key = ''
+
 players = dict()
 wait_game_start_confirmation = False
 
@@ -84,4 +86,4 @@ async def assign_spy(ctx):
     spy = list(players.keys())[index]
     await players[spy].send("shhhh, you're the spy...")
 
-bot.run('NjE0NjA0NTUyMDI0NDkwMDE1.XWC-Ug.mem-O038YuvcI1Q_jrt5sa7fuVY')
+bot.run(key)
