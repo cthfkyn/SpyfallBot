@@ -1,10 +1,17 @@
-import discord
+import discord, os
 from discord.ext import commands
 import random
 
 bot = commands.Bot(command_prefix='>')
 
-key = ''
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+keyPath = 'key.txt'
+keyFile = open(os.path.join(__location__, keyPath), 'r')
+key = keyFile.read()
+keyFile.close()
+
+print(key)
 
 players = dict()
 wait_game_start_confirmation = False
@@ -86,4 +93,4 @@ async def assign_spy(ctx):
     spy = list(players.keys())[index]
     await players[spy].send("shhhh, you're the spy...")
 
-bot.run(key)
+#bot.run(key)
